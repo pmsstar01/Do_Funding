@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="order.orderdetail.Composite">
+<!-- 	
+		조인할 경우 받는 객체에 별칭 설정을 해줘야 resultType에 들어간다.
+ --> 
+ 	<select id="DetailList" resultType="order.cart.ShoppingInfo" >
+ 		select od.od_o_num od_num, p.p_image, p.p_total_price, p.p_end_price, p.p_start_date, p.p_end_date,  p.p_num, od.od_deliver deliver, od.od_option_no option_no, op.option_content, p.p_subject, od.od_qty qty, p.p_origin_price price, p.p_origin_price*od.od_qty amount
+ 		from do_orderdetail od inner join do_option op
+ 		on op.option_no = od.od_option_no
+		inner join do_product p
+ 		on od.od_p_num = p.p_num and od.od_o_num= #{o_num}
+ 	</select>	
+</mapper>
+<!-- composite.xml -->

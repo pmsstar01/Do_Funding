@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="category.model.Category">
+
+	<insert id="InsertCategory">
+		insert into category(cnum,code,cname)
+		values(catseq.nextval,#{code},#{cname})
+	</insert>
+
+	<!--상품 추가용  -->
+	<select id="CategoryAllByProduct" resultType="MyCategory">
+		select *  from category order by cnum
+	</select>
+
+	<!--카테고리 수정용 -->
+	<select id="GetCategory" resultType="MyCategory">
+		select * from category where cnum=#{cnum} 
+	</select>
+
+	<select id="TotalCount" resultType="int">
+		select count(*) from category
+		<if test="whatColumn == 'code'">
+			where code like #{keyword}
+		</if>
+		<if test="whatColumn == 'cname'">
+			where cname like #{keyword}
+		</if>
+	</select>
+
+	<select id="CategoryAll" resultType="MyCategory">
+		select * from category
+		<if test="whatColumn == 'code'">
+			where code like #{keyword}
+		</if>
+		<if test="whatColumn == 'cname'">
+			where cname like #{keyword}
+		</if>
+		order by cnum
+	</select>
+	
+	<update id="UpdateCategory">
+		update category set code = #{code} , cname = #{cname} 
+		where cnum=#{cnum} 
+	</update>
+
+	<delete id="CategoryDelete">
+		delete from category where cnum=#{cnum}
+	</delete>
+	
+	<delete id="MultiDeleteCategory">
+		delete from category where cnum=#{rowcheck}
+	</delete>
+	
+</mapper>

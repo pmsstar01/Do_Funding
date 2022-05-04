@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="product.model.Product">
+
+	<select id="GetTotalCount" resultType="int">
+		select count(*) from do_product
+		<choose>
+			<when test="whatColumn1 == 'p_ing'">
+				where p_end_date > sysdate and sysdate > p_start_date 
+						<if test="whatColumn == 'p_subject'">
+							and p_subject like #{keyword}
+						</if>
+						<if test="whatColumn == 'p_content'">
+							and p_content like #{keyword}
+						</if>
+
+			</when>
+			<when test="whatColumn1 == 'p_end'">
+				where sysdate > p_end_date 
+						<if test="whatColumn == 'p_subject'">
+							and p_subject like #{keyword}
+						</if>
+						<if test="whatColumn == 'p_content'">
+							and p_content like #{keyword}
+						</if>		
+			</when>
+			<when test="whatColumn1 == 'p_future'">
+				where  p_start_date > sysdate 
+						<if test="whatColumn == 'p_subject'">
+							and p_subject like #{keyword}
+						</if>
+						<if test="whatColumn == 'p_content'">
+							and p_content like #{keyword}
+						</if>			
+			</when>
+			<otherwise>
+				<if test="whatColumn == 'p_subject'">
+					where p_subject like #{keyword}
+				</if>
+				<if test="whatColumn == 'p_content'">
+					where p_content like #{keyword}
+				</if>				
+			</otherwise>
+		</choose>
+		order by p_num desc
+	</select>
+	
+	<select id="ProductList" resultType="MyProduct">
+		select * from do_product
+		<choose>
+			<when test="whatColumn1 == 'p_ing'">
+				where p_end_date > sysdate and sysdate > p_start_date 
+						<if test="whatColumn == 'p_subject'">
+							and p_subject like #{keyword}
+						</if>
+						<if test="whatColumn == 'p_content'">
+							and p_content like #{keyword}
+						</if>
+			</when>
+			<when test="whatColumn1 == 'p_end'">
+				where sysdate > p_end_date 
+						<if test="whatColumn == 'p_subject'">
+							and p_subject like #{keyword}
+						</if>
+						<if test="whatColumn == 'p_content'">
+							and p_content like #{keyword}
+						</if>		
+			</when>
+			<when test="whatColumn1 == 'p_future'">
+				where  p_start_date > sysdate 
+						<if test="whatColumn == 'p_subject'">
+							and p_subject like #{keyword}
+						</if>
+						<if test="whatColumn == 'p_content'">
+							and p_content like #{keyword}
+						</if>			
+			</when>
+			<otherwise>
+				<if test="whatColumn == 'p_subject'">
+					where p_subject like #{keyword}
+				</if>
+				<if test="whatColumn == 'p_content'">
+					where p_content like #{keyword}
+				</if>				
+			</otherwise>
+		</choose>	
+		order by p_num desc
+	</select>	
+	
+ 	<select id="RotatorList" resultType="MyProduct">		
+ 		select p_num,p_image from (select p_num,p_image, p_readcount, row_number() over (order by p_readcount desc) as rank  from do_product) where rank between 1 and 5
+ 	</select>
+ 	
+	<select id="GetProduct" resultType="MyProduct">
+ 		select * from do_product where p_num=#{p_num}	
+ 	</select>
+	
+	<insert id="InsertProduct">	
+		<!-- default p_readcount,p_like,p_total_price,p_reg_date  -->
+ 		insert into do_product(p_num,p_category_fk,p_writer, p_subject, p_image, p_content, p_origin_price, p_end_price, p_point, p_start_date, p_end_date)
+ 		values(seqdo_product.nextval,#{p_category_fk},#{p_writer},#{p_subject},#{p_image},#{p_content},#{p_origin_price},#{p_end_price},#{p_point},#{p_start_date},#{p_end_date})
+ 	</insert>
+
+	<update id="ReadcountUp">
+		update do_product set p_readcount=p_readcount+1 where p_num=#{p_num}	
+	</update>
+
+	<delete id="MultiDeleteProduct">
+		delete from do_product where p_num = #{rowcheck}	
+	</delete>
+
+	<delete id="DeleteProduct">
+		delete do_product  
+		where p_num = #{p_num}
+	</delete>
+
+	<update id="UpdateProduct">
+ 		update do_product set p_category_fk=#{p_category_fk}, p_subject=#{p_subject}, 
+ 		p_image=#{p_image}, p_content=#{p_content}, p_origin_price=#{p_origin_price}, 
+ 		p_end_price=#{p_end_price}, p_point=#{p_point}, p_start_date=#{p_start_date}, 
+ 		p_end_date=#{p_end_date}
+ 		where p_num = #{p_num}
+	</update>
+	
+	<!--상품 결제시 금액 기존꺼에 추가기입  -->
+	<update id="UpdateTotal_price">
+ 		update do_product set 
+ 		p_total_price=p_total_price+#{p_total_price}
+ 		where p_num = #{p_num}
+	</update>
+
+
+	
+	
+	<!-- 옵션용 -->
+	<select id="GetP_num" resultType="int">
+ 		select max(p_num) from do_product 
+ 	</select>
+
+	<select id="OptionAllByProduct" resultType="product.model.OptionBean">
+ 		select * from do_option where option_item_no=#{p_num}
+ 	</select>
+ 	
+	<insert id="ItemOptionInsert">
+		INSERT INTO do_option (option_no, option_content, option_item_no )
+		VALUES(seqdo_option.nextval , #{item_option} , #{option_item_no})	
+	</insert>
+
+	<insert id="ItemOptionDelete">
+		delete do_option where option_item_no=#{option_item_no}
+	</insert>
+
+	<select id="GetOption" resultType="product.model.OptionBean">
+ 		select * from do_option where option_no=#{option_no}
+ 	</select>
+
+</mapper>
+
+
+<!-- product.xml -->
+
+

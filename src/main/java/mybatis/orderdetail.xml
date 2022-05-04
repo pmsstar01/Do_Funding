@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="orderdetail.model.Orderdetail">
+ 	<select id="OrderDetailList" resultType="MyOrderDetail">
+		select * from do_orderdetail where o_num = #{o_num}
+  	</select>
+ 	
+	<insert id="InsertOrderDetail">
+		insert into do_orderdetail(od_num,od_o_num,od_p_num,od_option_no,od_qty)
+		values(seqod.nextval,#{od_o_num},#{od_p_num},#{od_option_no},#{od_qty})
+	</insert>
+
+
+
+<!-- 후원금 관련 -->	
+	<insert id="InsertDonation" >
+		insert into do_donation(dona_num, dona_o_num, dona_no, dona_money, dona_buyprice)
+		values(seqdona.nextval, #{dona_o_num},#{dona_no}, #{dona_money},#{dona_buyprice})
+	</insert>
+	
+	<select id="DonaTotalCount" resultType="int">
+		select count(*) from 
+		do_donation
+		where dona_no =#{no}
+	</select>
+	
+	<select id="GetDonaList" resultType="orderdetail.model.DonationBean">
+		select * from
+		do_donation
+		where dona_no=#{no}
+	</select>	
+</mapper>

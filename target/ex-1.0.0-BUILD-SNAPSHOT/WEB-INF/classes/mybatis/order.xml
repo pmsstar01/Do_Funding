@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="order.model.Order">
+
+	<insert id="InsertOrder">
+		insert into do_order(o_num, o_mnum) 
+		values(seqoid.nextval, #{no})
+	</insert>
+	
+	<select id="GetMaxO_num" resultType="int">
+		select max(o_num) from do_order
+	</select>
+
+ 	<select id="getOrderList" resultType="MyOrder">
+ 		select * from do_order where o_mnum = #{no} order by o_num desc
+ 	</select>
+	<select id="getOrderTotalCount" resultType="int">
+		select count(*) from do_order
+		 where o_mnum = #{no} order by o_num desc
+	</select>
+	
+	
+	
+	<select id="OrderTotalCount" resultType="int">
+		select count(*) from do_order
+		<if test="whatColumn == 'o_mnum'">
+			where o_mnum like #{keyword}
+		</if>
+		order by o_num desc
+	</select>
+ 	<select id="AllOrderList" resultType="MyOrder">
+ 		select * from do_order 
+ 		<if test="whatColumn=='o_mnum'">
+			where o_mnum like #{keyword}
+		</if>	
+ 		order by o_num desc
+ 	</select>
+ 
+ 
+ 		
+</mapper>

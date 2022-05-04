@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+	
+	<typeAliases>
+		<typeAlias type="like.model.LikeBean" alias="MyLike"/>
+		<typeAlias type="board.model.BoardBean" alias="MyBoard"/>
+		<typeAlias type="product.model.ProductBean" alias="MyProduct"/>
+		<typeAlias type="member.model.MemberBean" alias="MyMember"/>
+		<typeAlias type="order.model.OrderBean" alias="MyOrder"/>
+		<typeAlias type="orderdetail.model.OrderDetailBean" alias="MyOrderDetail"/>
+		<typeAlias type="category.model.CategoryBean" alias="MyCategory"/>
+	</typeAliases>
+	
+	<mappers>
+		<mapper resource="mybatis/board.xml"/>
+		<mapper resource="mybatis/product.xml"/>
+		<mapper resource="mybatis/member.xml"/>
+		<mapper resource="mybatis/order.xml"/>
+		<mapper resource="mybatis/category.xml"/>
+		<mapper resource="mybatis/like.xml"/>
+		<mapper resource="mybatis/orderdetail.xml"/>
+		<mapper resource="mybatis/bot.xml"/>
+		<mapper resource="mybatis/composite.xml"/>
+	</mappers>
+</configuration>
+
+
+<!-- SqlMapConfig.xml -->

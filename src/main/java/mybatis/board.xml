@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="board.model.Board">
+
+	<select id="GetArticleCount" resultType="int">
+		select count(*) from do_board
+		<if test="whatColumn == 'b_writer'">
+			where b_writer like #{keyword}
+		</if>
+		<if test="whatColumn == 'b_subject'">
+			where b_subject like #{keyword}
+		</if>
+		<if test="whatColumn == 'b_content'">
+			where b_content like #{keyword}
+		</if>
+	</select>
+	
+	<select id="GetArticles" resultType="MyBoard">
+		select b_num, b_writer, b_subject, b_passwd, b_reg_date, b_readcount, b_ref,
+		b_re_step, b_re_level, b_content
+		from (select rownum as rank, b_num, b_writer, b_subject, b_passwd,
+		b_reg_date, b_readcount, b_ref, b_re_step, b_re_level, b_content
+		from (select b_num, b_writer, b_subject, b_passwd, b_reg_date, b_readcount,
+		b_ref, b_re_step, b_re_level, b_content
+		from do_board
+		<if test="whatColumn =='b_writer'">
+			where b_writer like #{keyword}
+		</if>
+		<if test="whatColumn =='b_subject'">
+			where b_subject like #{keyword}
+		</if>
+		<if test="whatColumn =='b_content'">
+			where b_content like #{keyword}
+		</if>
+		order by b_ref desc, b_re_step asc ))
+	</select>
+
+
+	<insert id="InsertArticle">
+		insert into do_board
+		(b_num,b_writer,b_subject, b_passwd,b_reg_date,b_ref,b_re_step,b_re_level,b_content)
+		values
+		(seqdo_board.nextval,#{b_writer},#{b_subject},#{b_passwd},#{b_reg_date},seqdo_board.currval,0,0,#{b_content})
+	</insert>
+
+
+	<update id="UpdateReadCount">
+		update do_board set b_readcount=b_readcount+1 where b_num=#{b_num}
+	</update>
+
+
+	<select id="GetArticle" resultType="MyBoard">
+		select * from do_board where b_num=#{b_num}
+	</select>
+
+	<select id="ArticleCount" resultType="int">
+		select count(*) from do_board where b_num=#{b_num}
+	</select>
+
+	<select id="GetArticlePasswd" resultType="String">
+		select b_passwd from
+		do_board where b_num=#{b_num}
+	</select>
+	
+	
+	<update id="UpdateArticle">
+		update do_board set
+		b_subject=#{b_subject} ,b_content=#{b_content}
+		where b_num=#{b_num}
+	</update>
+
+	<delete id="DeleteArticle">
+	    delete from do_board 
+		where b_num=#{b_num}
+	</delete>
+	
+	<delete id="AllDelete">
+	    delete from do_board 
+		where b_ref=#{b_ref}
+	</delete>
+	
+	<update id="ReplyPlus">
+		update do_board set b_re_step=b_re_step+1
+		where b_ref= #{b_ref} and b_re_step > #{b_re_step}
+	</update>
+	<insert id="ReplyArticle">
+        insert into do_board
+        (b_num,b_writer,b_subject,b_passwd,b_reg_date,b_ref,b_re_step,b_re_level,b_content)
+        values
+        (seqdo_board.nextval,#{b_writer},#{b_subject},#{b_passwd},#{b_reg_date},#{b_ref},#{b_re_step}+1,#{b_re_level}+1,#{b_content})
+    </insert>
+
+
+	<delete id="MultiDeleteBoard">
+		delete from do_board where b_num = #{rowcheck}
+	</delete>
+
+
+
+<!--고객센터용 notice  -->
+	<select id="GetNoticeCount" resultType="int">
+		select count(*) from do_notice_board
+		<if test="whatColumn == 'no_subject'">
+			where no_subject like #{keyword}
+		</if>
+		<if test="whatColumn == 'no_content'">
+			where no_content like #{keyword}
+		</if>
+	</select>
+	
+	<select id="GetNotices" resultType="board.model.NoticeBean">
+		select * from do_notice_board
+		<if test="whatColumn == 'no_subject'">
+			where no_subject like #{keyword}
+		</if>
+		<if test="whatColumn == 'no_content'">
+			where no_content like #{keyword}
+		</if>
+		order by no_num desc
+	</select>
+	
+	<insert id="InsertNotice">
+		insert into do_notice_board
+		(no_num,no_writer,no_subject,no_content)
+		values
+		(seqdo_notice_board.nextval,#{no_writer},#{no_subject},#{no_content})
+	</insert>
+
+	<update id="NoticeUpdateReadCount">
+		update do_notice_board set no_readcount=no_readcount+1 where no_num=#{no_num}
+	</update>
+
+	<select id="GetNotice" resultType="board.model.NoticeBean">
+		select * from do_notice_board where no_num=#{no_num}
+	</select>
+
+	<update id="UpdateNotice">
+		update do_notice_board set
+		no_subject=#{no_subject} ,no_content=#{no_content}
+		where no_num=#{no_num}
+	</update>
+
+	<delete id="DeleteNotice">
+		delete do_notice_board where no_num=#{no_num}
+	</delete>	
+
+	<delete id="MultiDeleteNotice">
+		delete from do_notice_board where no_num = #{rowcheck}
+	</delete>	
+	
+	
+<!--고객센터 faq  -->	
+	<select id="GetFaqCount" resultType="int">
+		select count(*) from do_faq_board
+		<if test="whatColumn == 'faq_subject'">
+			where faq_subject like #{keyword}
+		</if>
+		<if test="whatColumn == 'faq_content'">
+			where faq_content like #{keyword}
+		</if>
+	</select>
+	
+	<select id="GetFaqs" resultType="board.model.FaqBean">
+		select * from do_faq_board
+		<if test="whatColumn == 'faq_subject'">
+			where faq_subject like #{keyword}
+		</if>
+		<if test="whatColumn == 'faq_content'">
+			where faq_content like #{keyword}
+		</if>
+		order by faq_num desc
+	</select>
+
+	<insert id="InsertFaq">
+		insert into do_faq_board
+		(faq_num,faq_writer,faq_subject,faq_content)
+		values
+		(seqdo_faq_board.nextval,#{faq_writer},#{faq_subject},#{faq_content})
+	</insert>
+
+	<update id="FaqUpdateReadCount">
+		update do_faq_board set faq_readcount=faq_readcount+1 where faq_num=#{faq_num}
+	</update>
+	
+	<select id="GetFaq" resultType="board.model.FaqBean">
+		select * from do_faq_board where faq_num=#{faq_num}
+	</select>
+
+	<update id="UpdateFaq">
+		update do_faq_board set
+		faq_subject=#{faq_subject} ,faq_content=#{faq_content}
+		where faq_num=#{faq_num}
+	</update>
+
+	<delete id="DeleteFaq">
+		delete do_faq_board where faq_num=#{faq_num}
+	</delete>		
+
+	<delete id="MultiDeleteFaq">
+		delete from do_faq_board where faq_num = #{rowcheck}
+	</delete>	
+	
+</mapper>
+
+
